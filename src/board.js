@@ -12,8 +12,8 @@ import { Point } from "./point.js";
 "use strict";
 
 const SMALL = 1;
-const MEDIUM = 2; // 9x9
-const LARGE = 3; // 9x9
+const MEDIUM = 2;
+const LARGE = 3;
 
 const UP = 'w';
 const LEFT = 'a';
@@ -32,7 +32,17 @@ export class Board {
         this._board = this._initBoard();
         this._initSnake();
 
-        document.addEventListener('keydown', event => this._handleKeyDownEvent(event));
+    }
+
+    start() {
+        this.keyDownListener = (event) => this._handleKeyDownEvent(event);
+        document.addEventListener('keydown',this.keyDownListener);
+        this.moveIntervalId = setInterval(() => this._moveSnake(this._calcSnakeDirection()), 1000)
+    }
+
+    stop() {
+        document.removeEventListener('keydown', this.keyDownListener);
+        clearInterval(this.moveIntervalId);
     }
 
     static get medium() {
@@ -62,12 +72,13 @@ export class Board {
                 newSnakeHeadPoint = new Point(snakeHeadPoint.x, snakeHeadPoint.y + 1);
                 break;
             default:
-                throw Error("Not a valid direction.")
+                throw Error(`${direction} is not a valid direction.`)
         }
         this._updateSquare(newSnakeHeadPoint, Square.snake);
         this._updateSquare(snakeTailPoint, Square.empty);
         this._snakePoints.shift();
         this._snakePoints.push(newSnakeHeadPoint)
+        console.log(this._calcSnakeDirection());
     }
 
     _updateSquare(point, squareType) {
@@ -86,7 +97,7 @@ export class Board {
                 let squareElement = document.createElement("div");
                 squareElement.className = "square-empty";
                 rowElement.append(squareElement);
-                board[row][col] = new Square(3, squareElement);
+                board[row][col] = new Square(null, squareElement);
             }
         }
         console.log(board);
@@ -100,6 +111,25 @@ export class Board {
         this._snakePoints.push(new Point(4, 1));
         this._snakePoints.push(new Point(4, 2));
         this._snakePoints.push(new Point(4, 3));
+    }
+
+    _calcSnakeDirection() {
+        const snakeHeadPoint = this._snakePoints.at(SNAKE_HEAD_POINT);
+        const snakeBeforeHeadPoint = this._snakePoints.at(-2);
+        // 4,3 4,4
+        const xDiff = snakeHeadPoint.x - snakeBeforeHeadPoint.x;
+        const yDiff = snakeHeadPoint.y - snakeBeforeHeadPoint.y;
+        if (xDiff === -1) {
+            return UP;
+        } else if (xDiff === 1) {
+            return DOWN;
+        } else if (yDiff === -1) {
+            return LEFT;
+        } else if (yDiff === 1) {
+            return RIGHT; 
+        } else {
+            throw Error("Can not calculate snake direction.");
+        }
     }
 
     static _isValidDirection(direction) {
