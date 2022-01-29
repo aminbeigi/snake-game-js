@@ -90,11 +90,19 @@ export class Board {
             this.stop("Ran into wall!!!");
             return;
         }
-
-        this._updateSquare(newSnakeHeadPoint, Square.snake);
-        this._updateSquare(snakeTailPoint, Square.empty);
-        this._snakePoints.shift();
+        const square = this._board[newSnakeHeadPoint.x][newSnakeHeadPoint.y];
+        if (Square.isAppleSquare(square)) {
+            // EAT THE APPLE NOM NOM NOM
+            this._spawnApple();
+        } else {
+            // delete snake tail
+            this._snakePoints.shift();
+            this._updateSquare(snakeTailPoint, Square.empty);
+        }
+        
         this._snakePoints.push(newSnakeHeadPoint)
+        this._board[snakeHeadPoint.x][snakeHeadPoint.y].type = Square.snakeBody; // rename previous head
+        this._updateSquare(newSnakeHeadPoint, Square.snakeHead);
     }
 
     _updateSquare(point, squareType) {
@@ -121,9 +129,9 @@ export class Board {
     }
 
     _initSnake() {
-        this._updateSquare(new Point(4, 1), Square.snake);
-        this._updateSquare(new Point(4, 2), Square.snake);
-        this._updateSquare(new Point(4, 3), Square.snake);
+        this._updateSquare(new Point(4, 1), Square.snakeBody);
+        this._updateSquare(new Point(4, 2), Square.snakeBody);
+        this._updateSquare(new Point(4, 3), Square.snakeHead);
         this._snakePoints.push(new Point(4, 1));
         this._snakePoints.push(new Point(4, 2));
         this._snakePoints.push(new Point(4, 3));
@@ -136,8 +144,8 @@ export class Board {
             const y = Board._genRandomNumber(9);
             point = new Point(x, y);
             const square = this._board[point.x][point.y];
-            if (Square._isEmptySquare(square)) break;
-            console.log(Square._isEmptySquare(square));
+            if (Square.isEmptySquare(square)) break;
+            console.log(Square.isEmptySquare(square));
             console.log(Square.empty);
             console.log(square.type);
             throw Error('what');

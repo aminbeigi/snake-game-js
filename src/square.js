@@ -1,6 +1,7 @@
 const EMPTY = 0;
-const SNAKE = 1;
-const APPLE = 2;
+const SNAKE_BODY = 1;
+const SNAKE_HEAD = 2;
+const APPLE = 3;
 
 export class Square {
     constructor(type, element) {
@@ -12,8 +13,12 @@ export class Square {
         return EMPTY;
     }
 
-    static get snake() {
-        return SNAKE;
+    static get snakeBody() {
+        return SNAKE_BODY;
+    }
+
+    static get snakeHead() {
+        return SNAKE_HEAD;
     }
 
     static get apple() {
@@ -37,8 +42,11 @@ export class Square {
             case Square.empty:
                 this.element.className = "square-empty";
                 break;
-            case Square.snake:
-                this.element.className = "square-snake";
+            case Square.snakeBody:
+                this.element.className = "square-snake-body";
+                break;
+            case Square.snakeHead:
+                this.element.className = "square-snake-head";
                 break;
             case Square.apple:
                 this.element.className = "square-apple";
@@ -50,10 +58,22 @@ export class Square {
     }
 
     static _isValidType(type) {
-        return type === Square.empty || type === Square.snake || type === Square.apple;
+        return type === Square.empty || type === Square.snakeBody ||
+            type === Square.snakeHead || type === Square.apple;
     }
 
-    static _isEmptySquare(square) {
+    static isEmptySquare(square) {
+        if (!(square instanceof Square)) throw Error(`${square} is not an instance of Square.`);
         return square.type === Square.empty;
+    }
+
+    static isSnakeSquare(square) {
+        if (!(square instanceof Square)) throw Error(`${square} is not an instance of Square.`);
+        return square.type === Square.Body || square.type === Square.snakeHead;
+    }
+
+    static isAppleSquare(square) {
+        if (!(square instanceof Square)) throw Error(`${square} is not an instance of Square.`);
+        return square.type === Square.apple;
     }
 }
