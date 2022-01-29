@@ -1,7 +1,6 @@
 /*
 simple class
 */
-
 export class Point {
     _x;
     _y;

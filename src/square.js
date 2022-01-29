@@ -16,8 +16,8 @@ export class Square {
         return SNAKE;
     }
 
-    static get empty() {
-        return EMPTY;
+    static get apple() {
+        return APPLE;
     }
 
     get type() {
@@ -25,12 +25,12 @@ export class Square {
     }
 
     set type(type) {
-        if (!Square.#isValidType) {
-            throw new Error(`Type must be either 1, 2 or 3. ${type} is not a valid type.`)
+        if (!Square._isValidType) {
+            throw new Error(`Square type must be either 1, 2 or 3.`)
         }
 
         if (this._type === type) {
-            throw new Error(`Can not set type to same type.`)
+            throw new Error(`Square type arg is same as current type.`)
         }
 
         switch (type) {
@@ -47,9 +47,10 @@ export class Square {
                 throw Error(`${type} is not a valid type.`);
         }
         this._type = type;
+        return true;
     }
 
-    static #isValidType(type) {
+    static _isValidType(type) {
         return type === Square.empty || type === Square.snake || type === Square.apple;
     }
 }

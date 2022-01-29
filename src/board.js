@@ -18,12 +18,14 @@ const LARGE = 3; // 9x9
 const UP = 'w';
 const LEFT = 'a';
 const DOWN = 's';
-const RIGHT = 'r';
+const RIGHT = 'd';
+
+const SNAKE_HEAD_POINT = -1;
+const SNAKE_TAIL_POINT = 0;
 export class Board {
+    _snakePoints = [];
     _board;
     _boardSize;
-    _snakeHeadPoint;
-    _snakeTailPoint;
 
     constructor(boardSize) {
         this._boardSize = boardSize;
@@ -43,16 +45,29 @@ export class Board {
     }
 
     _moveSnake(direction) {
+        let snakeHeadPoint = this._snakePoints.at(SNAKE_HEAD_POINT);
+        let snakeTailPoint = this._snakePoints.at(SNAKE_TAIL_POINT);
+        let newSnakeHeadPoint;
         switch (direction) {
             case UP:
-                console.log("head")
-                const newSnakeHeadPoint = new Point(this._snakeHeadPoint.x - 1, this._snakeHeadPoint.y);
-                this._updateSquare(newSnakeHeadPoint, Square.snake);
-                this._updateSquare(this._snakeTailPoint, Square.empty);
+                newSnakeHeadPoint = new Point(snakeHeadPoint.x - 1, snakeHeadPoint.y);
+                break;
+            case LEFT:
+                newSnakeHeadPoint = new Point(snakeHeadPoint.x, snakeHeadPoint.y - 1);
+                break;
+            case DOWN:
+                newSnakeHeadPoint = new Point(snakeHeadPoint.x + 1, snakeHeadPoint.y);
+                break;
+            case RIGHT:
+                newSnakeHeadPoint = new Point(snakeHeadPoint.x, snakeHeadPoint.y + 1);
                 break;
             default:
                 throw Error("Not a valid direction.")
         }
+        this._updateSquare(newSnakeHeadPoint, Square.snake);
+        this._updateSquare(snakeTailPoint, Square.empty);
+        this._snakePoints.shift();
+        this._snakePoints.push(newSnakeHeadPoint)
     }
 
     _updateSquare(point, squareType) {
@@ -82,8 +97,9 @@ export class Board {
         this._updateSquare(new Point(4, 1), Square.snake);
         this._updateSquare(new Point(4, 2), Square.snake);
         this._updateSquare(new Point(4, 3), Square.snake);
-        this._snakeHeadPoint = new Point(4, 3);
-        this._snakeTailPoint = new Point(4, 1);
+        this._snakePoints.push(new Point(4, 1));
+        this._snakePoints.push(new Point(4, 2));
+        this._snakePoints.push(new Point(4, 3));
     }
 
     static _isValidDirection(direction) {
