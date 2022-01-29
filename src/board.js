@@ -11,9 +11,6 @@ import { Square } from "./square.js";
 "use strict";
 
 const MEDIUM = "medium"; // 9x9
-const EMPTY = 0;
-const SNAKE = 1;
-const APPLE = 2;
 export class Board {
     #board;
     #boardSize;
@@ -27,19 +24,6 @@ export class Board {
 
     static get medium() {
         return MEDIUM;
-    }
-
-    static get empty() {
-        return EMPTY;
-    }
-
-    static get snake() {
-        return SNAKE;
-    }
-
-    static get empty() {
-        return EMPTY;
-        
     }
 
     #initBoard() {
@@ -61,8 +45,8 @@ export class Board {
     }
 
     #initSnake() {
-        this.#board[4][1].type = Board.snake;
-        this.#board[4][2].type = Board.snake;
-        this.#board[4][3].type = Board.snake;
+        this.#board[4][1].type = Square.snake;
+        this.#board[4][2].type = Square.snake;
+        this.#board[4][3].type = Square.snake;
     }
 }
