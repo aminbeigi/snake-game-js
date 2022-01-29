@@ -1,6 +1,7 @@
 const EMPTY = 0;
 const SNAKE = 1;
 const APPLE = 2;
+
 export class Square {
     constructor(type, element) {
         this._type = type;
@@ -17,7 +18,6 @@ export class Square {
 
     static get empty() {
         return EMPTY;
-        
     }
 
     get type() {
