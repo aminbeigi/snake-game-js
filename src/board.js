@@ -31,18 +31,18 @@ export class Board {
         this._boardSize = boardSize;
         this._board = this._initBoard();
         this._initSnake();
-
     }
 
     start() {
         this.keyDownListener = (event) => this._handleKeyDownEvent(event);
         document.addEventListener('keydown',this.keyDownListener);
-        this.moveIntervalId = setInterval(() => this._moveSnake(this._calcSnakeDirection()), 1000)
+        this.moveIntervalId = setInterval(() => this._moveSnake(this._calcSnakeDirection(), true), 1000)
     }
 
-    stop() {
+    stop(message) {
         document.removeEventListener('keydown', this.keyDownListener);
         clearInterval(this.moveIntervalId);
+        console.log("Game LOST!");
     }
 
     static get medium() {
@@ -51,10 +51,18 @@ export class Board {
 
     _handleKeyDownEvent(e) {
         if (!Board._isValidDirection) return;
-        this._moveSnake(e.key);
+        this._moveSnake(e.key, false);
     }
 
-    _moveSnake(direction) {
+    /**
+     * This is the game loop I guess.
+     */
+
+    _moveSnake(direction, interval) {
+        if ((this._calcSnakeDirection() === direction) && !interval) {
+            return;
+        }
+
         let snakeHeadPoint = this._snakePoints.at(SNAKE_HEAD_POINT);
         let snakeTailPoint = this._snakePoints.at(SNAKE_TAIL_POINT);
         let newSnakeHeadPoint;
@@ -74,11 +82,17 @@ export class Board {
             default:
                 throw Error(`${direction} is not a valid direction.`)
         }
+
+        if (!(newSnakeHeadPoint.x >= 0 && newSnakeHeadPoint.x < 9 &&
+            newSnakeHeadPoint.y >= 0 && newSnakeHeadPoint.y < 9)) {
+            this.stop("Ran into wall!!!");
+            return;
+        }
+
         this._updateSquare(newSnakeHeadPoint, Square.snake);
         this._updateSquare(snakeTailPoint, Square.empty);
         this._snakePoints.shift();
         this._snakePoints.push(newSnakeHeadPoint)
-        console.log(this._calcSnakeDirection());
     }
 
     _updateSquare(point, squareType) {
@@ -116,7 +130,6 @@ export class Board {
     _calcSnakeDirection() {
         const snakeHeadPoint = this._snakePoints.at(SNAKE_HEAD_POINT);
         const snakeBeforeHeadPoint = this._snakePoints.at(-2);
-        // 4,3 4,4
         const xDiff = snakeHeadPoint.x - snakeBeforeHeadPoint.x;
         const yDiff = snakeHeadPoint.y - snakeBeforeHeadPoint.y;
         if (xDiff === -1) {
@@ -139,11 +152,11 @@ export class Board {
 
     static _isValidPoint(point) {
         if (!(point instanceof Point)) {
-            throw Error("Argument is not instance of Point.")
+            throw Error('Arg is not instance of Point.')
         }
         if (!(point.x >= 0 && point.x < 9 &&
             point.y >= 0 && point.y < 9)) {
-            throw Error("Point values are not inside board.")
+            throw Error(`The point ${point} values are not correct.`)
         }
 
         return true;
