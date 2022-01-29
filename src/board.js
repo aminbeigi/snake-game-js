@@ -10,7 +10,6 @@ import { Square } from "./square.js";
 import { Point } from "./point.js";
 
 "use strict";
-
 const SMALL = 1;
 const MEDIUM = 2;
 const LARGE = 3;
@@ -31,6 +30,7 @@ export class Board {
         this._boardSize = boardSize;
         this._board = this._initBoard();
         this._initSnake();
+        this._spawnApple();
     }
 
     start() {
@@ -59,7 +59,7 @@ export class Board {
      */
 
     _moveSnake(direction, interval) {
-        if ((this._calcSnakeDirection() === direction) && !interval) {
+        if (this._isPlayerMoveInSnakeDirection(direction, interval)) {
             return;
         }
 
@@ -83,6 +83,8 @@ export class Board {
                 throw Error(`${direction} is not a valid direction.`)
         }
 
+        // TODO: snake went on itself = loss
+
         if (!(newSnakeHeadPoint.x >= 0 && newSnakeHeadPoint.x < 9 &&
             newSnakeHeadPoint.y >= 0 && newSnakeHeadPoint.y < 9)) {
             this.stop("Ran into wall!!!");
@@ -101,6 +103,7 @@ export class Board {
     }
 
     _initBoard() {
+        // TODO clean up
         let containerElement = document.getElementById("container");
         let board = []
         for (let row = 0; row < 9; ++row) {
@@ -111,10 +114,9 @@ export class Board {
                 let squareElement = document.createElement("div");
                 squareElement.className = "square-empty";
                 rowElement.append(squareElement);
-                board[row][col] = new Square(null, squareElement);
+                board[row][col] = new Square(Square.empty, squareElement);
             }
         }
-        console.log(board);
         return board;
     }
 
@@ -125,6 +127,22 @@ export class Board {
         this._snakePoints.push(new Point(4, 1));
         this._snakePoints.push(new Point(4, 2));
         this._snakePoints.push(new Point(4, 3));
+    }
+
+    _spawnApple() {
+        let point; 
+        while (true) {
+            const x = Board._genRandomNumber(9);
+            const y = Board._genRandomNumber(9);
+            point = new Point(x, y);
+            const square = this._board[point.x][point.y];
+            if (Square._isEmptySquare(square)) break;
+            console.log(Square._isEmptySquare(square));
+            console.log(Square.empty);
+            console.log(square.type);
+            throw Error('what');
+        }
+        this._updateSquare(point, Square.apple);
     }
 
     _calcSnakeDirection() {
@@ -145,6 +163,16 @@ export class Board {
         }
     }
 
+    /**
+     * The player can not manually move in snake direction.
+     * @param {*} direction 
+     * @param {*} interval 
+     * @returns 
+     */
+    _isPlayerMoveInSnakeDirection(direction, interval) {
+        return (this._calcSnakeDirection() === direction) && !interval;
+    }
+
     static _isValidDirection(direction) {
         return direction === UP || direction === LEFT ||
             direction === DOWN || direction == RIGHT;
@@ -160,5 +188,9 @@ export class Board {
         }
 
         return true;
+    }
+
+    static _genRandomNumber(max) {
+        return Math.floor(Math.random() * max);
     }
 }

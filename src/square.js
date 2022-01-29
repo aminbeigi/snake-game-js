@@ -30,7 +30,7 @@ export class Square {
         }
 
         if (this._type === type) {
-            throw new Error(`Square type arg is same as current type.`)
+            throw new Error(`Square type arg ${type} is same as current type.`)
         }
 
         switch (type) {
@@ -47,10 +47,13 @@ export class Square {
                 throw Error(`${type} is not a valid type.`);
         }
         this._type = type;
-        return true;
     }
 
     static _isValidType(type) {
         return type === Square.empty || type === Square.snake || type === Square.apple;
+    }
+
+    static _isEmptySquare(square) {
+        return square.type === Square.empty;
     }
 }
