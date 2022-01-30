@@ -28,6 +28,7 @@ class Game {
         this.board = new Board(Game._formValueToBoardSize(boardSizeFormValue),
             Game._formValueToGameSpeed(gameSpeedFormValue));
         this._showGameScreen();
+        this.board.start();
     }
     
     _initExitGameButton() {
@@ -37,7 +38,6 @@ class Game {
     _exitGameHandler() {
         this._showMenuScreen();
         const parent = document.getElementById("game-screen");
-        console.log(parent)
         while (parent.firstChild) {
             if (parent.lastChild.textContent === 'X') {
                 break;

@@ -2,19 +2,57 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "Arial";
 }
 
 body {
     min-height: 100vh;
-    background-color: #353839;    
+    background-color: #4B4E53;    
 }
 
-#game-menu button {
-    background-color: black;
-    color: #eee;
-    width: 4rem;
-    height: 2rem;
+#game-menu {
+    height: 100vh;
 }
+
+#game-menu > .container {
+    background-color: #131313;
+    color: #eee;
+    border-radius: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+    height: auto;
+    margin-top: 44px;
+    padding: 30px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#game-menu h1 {
+    margin-bottom: 9px;
+    font-size: 55px;
+}
+
+#game-menu h2 {
+    margin-top: 22px;
+    margin-bottom: 9px;
+    font-size: 35px;
+}
+
+#game-menu select {
+    font-size: 20px;
+}
+
+#game-menu input {
+    background-color: #4B4E53;
+    color: #eee;
+    margin-top: 22px;
+    font-size: 40px;
+}
+
 
 #game-screen {
     height:100vh;
@@ -22,11 +60,15 @@ body {
 
 #game-screen div {
     display:flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .exit-game {
     background-color: red;
     font-size: 40px;
+    width: 50px;
+    height: 50px;
 }
 
 .square-empty {
@@ -37,13 +79,13 @@ body {
 }
 
 .square-snake-body {
-    background-color: lightblue;
+    background-color: lightgreen;
     width: 50px;
     height: 50px;
 }
 
 .square-snake-head {
-    background-color: blue;
+    background-color: green;
     width: 50px;
     height: 50px;
 }

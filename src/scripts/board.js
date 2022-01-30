@@ -22,7 +22,7 @@ const SNAKE_HEAD_POINT = -1;
 const SNAKE_BODY_ONE_SQUARE_BEFORE_HEAD_POINT = -2;
 const SNAKE_TAIL_POINT = 0;
 
-/** Board class maintains state of board and conatins the game loop/logic. */
+/** Board class maintains state of board and conatins the game loop/logic.*/
 export class Board {
     _snakePoints = [];
 
@@ -182,7 +182,6 @@ export class Board {
             point = new Point(x, y);
             const square = this._board[point.x][point.y];
             if (Square.isEmptySquare(square)) break;
-            console.log('Calculating apple spot...');
         }
         this._updateSquare(point, Square.apple);
     }
