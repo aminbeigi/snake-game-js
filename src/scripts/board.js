@@ -9,10 +9,13 @@
 import { Square } from "./square.js";
 import { Point } from "./point.js";
 
-"use strict";
-const SMALL = 1;
-const MEDIUM = 2;
-const LARGE = 3;
+const GAME_SPEED_SLOW = 500;
+const GAME_SPEED_MEDIUM = 500;
+const GAME_SPEED_FAST = 1000;
+
+const BOARD_SIZE_SMALL = 1;
+const BOARD_SIZE_MEDIUM = 2;
+const BOARD_SIZE_LARGE = 3;
 
 const UP = 'w';
 const LEFT = 'a';
@@ -23,11 +26,10 @@ const SNAKE_HEAD_POINT = -1;
 const SNAKE_TAIL_POINT = 0;
 export class Board {
     _snakePoints = [];
-    _board;
-    _boardSize;
 
-    constructor(boardSize) {
+    constructor(boardSize, gameSpeed) {
         this._boardSize = boardSize;
+        this._gameSpeed = gameSpeed;
         this._board = this._initBoard();
         this._initSnake();
         this._spawnApple();
@@ -36,21 +38,24 @@ export class Board {
     start() {
         this.keyDownListener = (event) => this._handleKeyDownEvent(event);
         document.addEventListener('keydown',this.keyDownListener);
-        this.moveIntervalId = setInterval(() => this._moveSnake(this._calcSnakeDirection(), true), 1000)
+        this.moveIntervalId = setInterval(() => this._moveSnake(this._calcSnakeDirection(), true), this._gameSpeed)
     }
 
     stop(message) {
         document.removeEventListener('keydown', this.keyDownListener);
         clearInterval(this.moveIntervalId);
-        console.log("Game LOST!");
+        console.log(message);
     }
 
-    static get medium() {
-        return MEDIUM;
+    static get boardSizeMedium() {
+        return BOARD_SIZE_MEDIUM;
+    }
+
+    static get gameSpeedMedium() {
+        return GAME_SPEED_MEDIUM;
     }
 
     _handleKeyDownEvent(e) {
-        if (!Board._isValidDirection) return;
         this._moveSnake(e.key, false);
     }
 
@@ -58,15 +63,20 @@ export class Board {
      * This is the game loop I guess.
      */
 
-    _moveSnake(direction, interval) {
-        if (this._isPlayerMoveInSnakeDirection(direction, interval)) {
+    _moveSnake(inputDirection, interval) {
+        if (!Board._isValidDirection(inputDirection)) return;
+        if (this._isPlayerMoveInSnakeDirection(inputDirection, interval)) {
+            return;
+        }
+        if (this._calcOppositeSnakeDirection() === inputDirection) {
+            console.log("Cant go in opposite direction!");
             return;
         }
 
         let snakeHeadPoint = this._snakePoints.at(SNAKE_HEAD_POINT);
         let snakeTailPoint = this._snakePoints.at(SNAKE_TAIL_POINT);
         let newSnakeHeadPoint;
-        switch (direction) {
+        switch (inputDirection) {
             case UP:
                 newSnakeHeadPoint = new Point(snakeHeadPoint.x - 1, snakeHeadPoint.y);
                 break;
@@ -80,7 +90,7 @@ export class Board {
                 newSnakeHeadPoint = new Point(snakeHeadPoint.x, snakeHeadPoint.y + 1);
                 break;
             default:
-                throw Error(`${direction} is not a valid direction.`)
+                throw Error(`${inputDirection} is not a valid direction.`)
         }
 
         // TODO: snake went on itself = loss
@@ -90,7 +100,13 @@ export class Board {
             this.stop("Ran into wall!!!");
             return;
         }
+
         const square = this._board[newSnakeHeadPoint.x][newSnakeHeadPoint.y];
+        if (Square.isSnakeSquare(square)) {
+            this.stop("Ran into yourself!");
+            return;
+        }
+
         if (Square.isAppleSquare(square)) {
             // EAT THE APPLE NOM NOM NOM
             this._spawnApple();
@@ -145,10 +161,7 @@ export class Board {
             point = new Point(x, y);
             const square = this._board[point.x][point.y];
             if (Square.isEmptySquare(square)) break;
-            console.log(Square.isEmptySquare(square));
-            console.log(Square.empty);
-            console.log(square.type);
-            throw Error('what');
+            console.log('Calculating apple spot...');
         }
         this._updateSquare(point, Square.apple);
     }
@@ -168,6 +181,23 @@ export class Board {
             return RIGHT; 
         } else {
             throw Error("Can not calculate snake direction.");
+        }
+    }
+
+    _calcOppositeSnakeDirection() {
+        const currentSnakeDirection = this._calcSnakeDirection();
+        switch (currentSnakeDirection) {
+            case UP:
+                return DOWN;
+            case LEFT:
+                return RIGHT;
+            case DOWN:
+                return UP;
+            case RIGHT:
+                return LEFT;
+            default:
+                throw Error(`Can not calculate opposite snake direction
+                    from ${currentSnakeDirection}.`);
         }
     }
 

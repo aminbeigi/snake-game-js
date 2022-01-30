@@ -39,16 +39,16 @@ export class Square {
         }
 
         switch (type) {
-            case Square.empty:
+            case EMPTY:
                 this.element.className = "square-empty";
                 break;
-            case Square.snakeBody:
+            case SNAKE_BODY:
                 this.element.className = "square-snake-body";
                 break;
-            case Square.snakeHead:
+            case SNAKE_HEAD:
                 this.element.className = "square-snake-head";
                 break;
-            case Square.apple:
+            case APPLE:
                 this.element.className = "square-apple";
                 break;
             default:
@@ -58,22 +58,22 @@ export class Square {
     }
 
     static _isValidType(type) {
-        return type === Square.empty || type === Square.snakeBody ||
-            type === Square.snakeHead || type === Square.apple;
+        return type === EMPTY || type === SNAKE_BODY ||
+            type === SNAKE_HEAD || type === APPLE;
     }
 
     static isEmptySquare(square) {
         if (!(square instanceof Square)) throw Error(`${square} is not an instance of Square.`);
-        return square.type === Square.empty;
+        return square.type === EMPTY;
     }
 
     static isSnakeSquare(square) {
         if (!(square instanceof Square)) throw Error(`${square} is not an instance of Square.`);
-        return square.type === Square.Body || square.type === Square.snakeHead;
+        return square.type === SNAKE_BODY || square.type === SNAKE_HEAD;
     }
 
     static isAppleSquare(square) {
         if (!(square instanceof Square)) throw Error(`${square} is not an instance of Square.`);
-        return square.type === Square.apple;
+        return square.type === APPLE;
     }
 }
