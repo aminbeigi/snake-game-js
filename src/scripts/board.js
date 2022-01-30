@@ -1,25 +1,17 @@
-/* ext features:
-- resize the board (S/M/L).
-- more fruits on board at a time
-- game menu
-    - highscores
-    - current score
-*/
-
 import { Square } from "./square.js";
 import { Point } from "./point.js";
 
-const GAME_START_SNAKE_TAIL_POINT = new Point(4, 1);
-const GAME_START_SNAKE_BODY_POINT = new Point(4, 2);
-const GAME_START_SNAKE_HEAD_POINT = new Point(4, 3);
+const GAME_START_SNAKE_TAIL_POINT = new Point(4, 0);
+const GAME_START_SNAKE_BODY_POINT = new Point(4, 1);
+const GAME_START_SNAKE_HEAD_POINT = new Point(4, 2);
 
 const GAME_SPEED_SLOW = 500;
-const GAME_SPEED_MEDIUM = 500;
-const GAME_SPEED_FAST = 1000;
+const GAME_SPEED_MEDIUM = 250;
+const GAME_SPEED_FAST = 150;
 
-const BOARD_SIZE_SMALL = 6;
+const BOARD_SIZE_SMALL = 5;
 const BOARD_SIZE_MEDIUM = 9;
-const BOARD_SIZE_LARGE = 16;
+const BOARD_SIZE_LARGE = 15;
 
 const UP = 'ArrowUp';
 const LEFT = 'ArrowLeft';
@@ -36,7 +28,9 @@ export class Board {
 
     constructor(boardSize, gameSpeed) {
         this._boardSize = boardSize;
+        if (!Board._isValidBoardSize) throw Error(`${boardSize} is not a valid board size.`)
         this._gameSpeed = gameSpeed;
+        if (!Board._isValidGameSpeed) throw Error(`${gameSpeed} is not a valid game speed.`)
         this._board = this._initBoard();
         this._initSnake();
         this._spawnApple();
@@ -72,8 +66,16 @@ export class Board {
         return BOARD_SIZE_LARGE;
     }
 
+    static get gameSpeedSlow() {
+        return GAME_SPEED_SLOW;
+    }
+
     static get gameSpeedMedium() {
         return GAME_SPEED_MEDIUM;
+    }
+
+    static get gameSpeedFast() {
+        return GAME_SPEED_FAST;
     }
 
     _handleKeyDownEvent(e) {
@@ -147,7 +149,7 @@ export class Board {
      * @returns {!Array<!Array<Square>>} 2D array.
      */
     _initBoard() {
-        let containerElement = document.getElementById("container");
+        let containerElement = document.getElementById("game-screen");
         let board = []
         for (let row = 0; row < this._boardSize; ++row) {
             board.push(Array(this._boardSize).fill(null));
@@ -236,5 +238,17 @@ export class Board {
 
     static _genRandomNumber(max) {
         return Math.floor(Math.random() * max);
+    }
+
+    static _isValidBoardSize(boardSize) {
+        return boardSize === BOARD_SIZE_SMALL ||
+            boardSize === BOARD_SIZE_MEDIUM ||
+            boardSize === BOARD_SIZE_LARGE
+    }
+
+    static _isValidGameSpeed(gameSpeed) {
+        return gameSpeed === GAME_SPEED_SLOW ||
+            gameSpeed === GAME_SPEED_MEDIUM ||
+            gameSpeed === GAME_SPEED_FAST;
     }
 }

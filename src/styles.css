@@ -1,16 +1,26 @@
-*, body {
+*{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-#container {
+body {
+    min-height: 100vh;
     background-color: #353839;    
-    width: 100%;
+}
+
+#game-menu button {
+    background-color: black;
+    color: #eee;
+    width: 4rem;
+    height: 2rem;
+}
+
+#game-screen {
     height:100vh;
 }
 
-#container div {
+#game-screen div {
     display:flex;
 }
 

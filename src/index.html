@@ -9,7 +9,25 @@
     <title>Snake Game</title>
 </head>
 <body>
-    <div id="container">
+    <div id="game-menu">
+        <form onsubmit="return false;">
+            <h2>size</h2>
+            <select id="board-size">
+              <option value="0">small</option>
+              <option value="1" selected>medium</option>
+              <option value="2">large</option>
+            </select>
+            <h2>game speed</h2>
+            <select id="game-speed">
+              <option value="0">small</option>
+              <option value="1" selected>medium</option>
+              <option value="2">fast</option>
+            </select>
+            <input type="submit" id="gameDataForm" value="Start Game">
+          </form>
+    </div>
+
+    <div id="game-screen">
 
     </div>
 </body>
