@@ -1,7 +1,8 @@
-// GAME class
-
 import { Board } from "./board.js";
 
+/**
+ * The Game class alters between the game menu page and game page.
+ */
 class Game {
     constructor() {
         this._showMenuScreen();
@@ -40,11 +41,11 @@ class Game {
         const parent = document.getElementById("game-screen");
         while (parent.firstChild) {
             if (parent.lastChild.textContent === 'X') {
+                // remove every element except the exit game button
                 break;
             }
             parent.removeChild(parent.lastChild)
         }
-
     }
 
     static _formValueToBoardSize(boardSizeFormValue) {

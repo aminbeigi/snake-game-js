@@ -1,4 +1,4 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -53,13 +53,12 @@ body {
     font-size: 40px;
 }
 
-
 #game-screen {
-    height:100vh;
+    height: 100vh;
 }
 
 #game-screen div {
-    display:flex;
+    display: flex;
     justify-content: center;
     align-items: center;
 }

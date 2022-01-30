@@ -84,9 +84,8 @@ export class Board {
 
     /**
      * The game loop!
-     * @param {} inputDirection 
-     * @param {*} interval 
-     * @returns 
+     * @param {String} inputDirection 
+     * @param {boolean} interval 
      */
     _moveSnake(inputDirection, interval) {
         if (!Board._isValidDirection(inputDirection)) return;
@@ -114,13 +113,13 @@ export class Board {
         }
 
         if (!this._isPointInBounds(newSnakeHeadPoint)) {
-            this.stop("Ran into wall!!!");
+            this.stop("Moved into wall!!!");
             return;
         }
 
         const square = this._board[newSnakeHeadPoint.x][newSnakeHeadPoint.y];
         if (Square.isSnakeSquare(square)) {
-            this.stop("Ran into yourself!");
+            this.stop("Moved into snake body!");
             return;
         }
 
