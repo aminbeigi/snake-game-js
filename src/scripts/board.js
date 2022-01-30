@@ -109,13 +109,13 @@ export class Board {
         }
 
         if (!this._isPointInBounds(newSnakeHeadPoint)) {
-            this.stop("Moved into wall!!!");
+            this.stop("Moved into wall");
             return;
         }
 
         const square = this._board[newSnakeHeadPoint.x][newSnakeHeadPoint.y];
         if (Square.isSnakeSquare(square)) {
-            this.stop("Moved into snake body!");
+            this.stop("Moved into snake body");
             return;
         }
 
