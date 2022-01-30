@@ -24,6 +24,11 @@ body {
     display:flex;
 }
 
+.exit-game {
+    background-color: red;
+    font-size: 40px;
+}
+
 .square-empty {
     background-color: black;
     border: 0.1px solid grey;
