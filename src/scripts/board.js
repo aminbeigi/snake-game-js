@@ -1,10 +1,6 @@
 import { Square } from "./square.js";
 import { Point } from "./point.js";
 
-const GAME_START_SNAKE_TAIL_POINT = new Point(4, 0);
-const GAME_START_SNAKE_BODY_POINT = new Point(4, 1);
-const GAME_START_SNAKE_HEAD_POINT = new Point(4, 2);
-
 const GAME_SPEED_SLOW = 500;
 const GAME_SPEED_MEDIUM = 250;
 const GAME_SPEED_FAST = 150;
@@ -45,7 +41,7 @@ export class Board {
     stop(message) {
         document.removeEventListener('keydown', this.keyDownListener);
         clearInterval(this.moveIntervalId);
-        console.log(message);
+        console.log("Game over: " +  message);
     }
 
     resetMoveInterval() {
@@ -164,13 +160,20 @@ export class Board {
         return board;
     }
 
+    /**
+     * Always initialise the Snake in the middle of the board.
+     */
     _initSnake() {
-        this._updateSquare(GAME_START_SNAKE_TAIL_POINT, Square.snakeBody);
-        this._updateSquare(GAME_START_SNAKE_BODY_POINT, Square.snakeBody);
-        this._updateSquare(GAME_START_SNAKE_HEAD_POINT, Square.snakeHead);
-        this._snakePoints.push(GAME_START_SNAKE_TAIL_POINT);
-        this._snakePoints.push(GAME_START_SNAKE_BODY_POINT);
-        this._snakePoints.push(GAME_START_SNAKE_HEAD_POINT);
+        const middleRow = Math.floor(this._boardSize / 2);
+        const gameStartSnakeTailPoint = new Point(middleRow, 0);
+        const gameStartSnakeBodyPoint = new Point(middleRow, 1);
+        const gameStartSnakeHeadPoint = new Point(middleRow, 2);
+        this._updateSquare(gameStartSnakeTailPoint, Square.snakeBody);
+        this._updateSquare(gameStartSnakeBodyPoint, Square.snakeBody);
+        this._updateSquare(gameStartSnakeHeadPoint, Square.snakeHead);
+        this._snakePoints.push(gameStartSnakeTailPoint);
+        this._snakePoints.push(gameStartSnakeBodyPoint);
+        this._snakePoints.push(gameStartSnakeHeadPoint);
     }
 
     _spawnApple() {
