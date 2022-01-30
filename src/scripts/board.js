@@ -9,21 +9,28 @@
 import { Square } from "./square.js";
 import { Point } from "./point.js";
 
+const GAME_START_SNAKE_TAIL_POINT = new Point(4, 1);
+const GAME_START_SNAKE_BODY_POINT = new Point(4, 2);
+const GAME_START_SNAKE_HEAD_POINT = new Point(4, 3);
+
 const GAME_SPEED_SLOW = 500;
 const GAME_SPEED_MEDIUM = 500;
 const GAME_SPEED_FAST = 1000;
 
-const BOARD_SIZE_SMALL = 1;
-const BOARD_SIZE_MEDIUM = 2;
-const BOARD_SIZE_LARGE = 3;
+const BOARD_SIZE_SMALL = 6;
+const BOARD_SIZE_MEDIUM = 9;
+const BOARD_SIZE_LARGE = 16;
 
-const UP = 'w';
-const LEFT = 'a';
-const DOWN = 's';
-const RIGHT = 'd';
+const UP = 'ArrowUp';
+const LEFT = 'ArrowLeft';
+const DOWN = 'ArrowDown';
+const RIGHT = 'ArrowRight';
 
 const SNAKE_HEAD_POINT = -1;
+const SNAKE_BODY_ONE_SQUARE_BEFORE_HEAD_POINT = -2;
 const SNAKE_TAIL_POINT = 0;
+
+/** Board class maintains state of board and conatins the game loop/logic. */
 export class Board {
     _snakePoints = [];
 
@@ -38,7 +45,7 @@ export class Board {
     start() {
         this.keyDownListener = (event) => this._handleKeyDownEvent(event);
         document.addEventListener('keydown',this.keyDownListener);
-        this.moveIntervalId = setInterval(() => this._moveSnake(this._calcSnakeDirection(), true), this._gameSpeed)
+        this.moveIntervalId = setInterval(() => this._moveSnake(this._calcSnakeDirection(), true), this._gameSpeed);
     }
 
     stop(message) {
@@ -47,8 +54,22 @@ export class Board {
         console.log(message);
     }
 
+    resetMoveInterval() {
+        clearInterval(this.moveIntervalId);
+        document.addEventListener('keydown',this.keyDownListener);
+        this.moveIntervalId = setInterval(() => this._moveSnake(this._calcSnakeDirection(), true), this._gameSpeed)
+    }
+
+    static get boardSizeSmall() {
+        return BOARD_SIZE_SMALL;
+    }
+
     static get boardSizeMedium() {
         return BOARD_SIZE_MEDIUM;
+    }
+
+    static get boardSizeLarge() {
+        return BOARD_SIZE_LARGE;
     }
 
     static get gameSpeedMedium() {
@@ -60,18 +81,15 @@ export class Board {
     }
 
     /**
-     * This is the game loop I guess.
+     * The game loop!
+     * @param {} inputDirection 
+     * @param {*} interval 
+     * @returns 
      */
-
     _moveSnake(inputDirection, interval) {
         if (!Board._isValidDirection(inputDirection)) return;
-        if (this._isPlayerMoveInSnakeDirection(inputDirection, interval)) {
-            return;
-        }
-        if (this._calcOppositeSnakeDirection() === inputDirection) {
-            console.log("Cant go in opposite direction!");
-            return;
-        }
+        if (this._isMoveInSnakeDirection(inputDirection, interval)) return;
+        if (this._calcOppositeSnakeDirection() === inputDirection) return;
 
         let snakeHeadPoint = this._snakePoints.at(SNAKE_HEAD_POINT);
         let snakeTailPoint = this._snakePoints.at(SNAKE_TAIL_POINT);
@@ -93,10 +111,7 @@ export class Board {
                 throw Error(`${inputDirection} is not a valid direction.`)
         }
 
-        // TODO: snake went on itself = loss
-
-        if (!(newSnakeHeadPoint.x >= 0 && newSnakeHeadPoint.x < 9 &&
-            newSnakeHeadPoint.y >= 0 && newSnakeHeadPoint.y < 9)) {
+        if (!this._isPointInBounds(newSnakeHeadPoint)) {
             this.stop("Ran into wall!!!");
             return;
         }
@@ -119,22 +134,26 @@ export class Board {
         this._snakePoints.push(newSnakeHeadPoint)
         this._board[snakeHeadPoint.x][snakeHeadPoint.y].type = Square.snakeBody; // rename previous head
         this._updateSquare(newSnakeHeadPoint, Square.snakeHead);
+        this.resetMoveInterval();
     }
 
     _updateSquare(point, squareType) {
-        if (!(Board._isValidPoint(point))) return;
         this._board[point.x][point.y].type = squareType;
     }
 
+    /**
+     * Initialises a 2D array (game board) containing Square objects
+     * to all empty squares.
+     * @returns {!Array<!Array<Square>>} 2D array.
+     */
     _initBoard() {
-        // TODO clean up
         let containerElement = document.getElementById("container");
         let board = []
-        for (let row = 0; row < 9; ++row) {
-            board.push(Array(9).fill(null));
+        for (let row = 0; row < this._boardSize; ++row) {
+            board.push(Array(this._boardSize).fill(null));
             let rowElement = document.createElement("div");
             containerElement.append(rowElement);
-            for (let col = 0; col < 9; ++col) {
+            for (let col = 0; col < this._boardSize; ++col) {
                 let squareElement = document.createElement("div");
                 squareElement.className = "square-empty";
                 rowElement.append(squareElement);
@@ -145,19 +164,19 @@ export class Board {
     }
 
     _initSnake() {
-        this._updateSquare(new Point(4, 1), Square.snakeBody);
-        this._updateSquare(new Point(4, 2), Square.snakeBody);
-        this._updateSquare(new Point(4, 3), Square.snakeHead);
-        this._snakePoints.push(new Point(4, 1));
-        this._snakePoints.push(new Point(4, 2));
-        this._snakePoints.push(new Point(4, 3));
+        this._updateSquare(GAME_START_SNAKE_TAIL_POINT, Square.snakeBody);
+        this._updateSquare(GAME_START_SNAKE_BODY_POINT, Square.snakeBody);
+        this._updateSquare(GAME_START_SNAKE_HEAD_POINT, Square.snakeHead);
+        this._snakePoints.push(GAME_START_SNAKE_TAIL_POINT);
+        this._snakePoints.push(GAME_START_SNAKE_BODY_POINT);
+        this._snakePoints.push(GAME_START_SNAKE_HEAD_POINT);
     }
 
     _spawnApple() {
         let point; 
         while (true) {
-            const x = Board._genRandomNumber(9);
-            const y = Board._genRandomNumber(9);
+            const x = Board._genRandomNumber(this._boardSize);
+            const y = Board._genRandomNumber(this._boardSize);
             point = new Point(x, y);
             const square = this._board[point.x][point.y];
             if (Square.isEmptySquare(square)) break;
@@ -168,7 +187,7 @@ export class Board {
 
     _calcSnakeDirection() {
         const snakeHeadPoint = this._snakePoints.at(SNAKE_HEAD_POINT);
-        const snakeBeforeHeadPoint = this._snakePoints.at(-2);
+        const snakeBeforeHeadPoint = this._snakePoints.at(SNAKE_BODY_ONE_SQUARE_BEFORE_HEAD_POINT);
         const xDiff = snakeHeadPoint.x - snakeBeforeHeadPoint.x;
         const yDiff = snakeHeadPoint.y - snakeBeforeHeadPoint.y;
         if (xDiff === -1) {
@@ -201,13 +220,7 @@ export class Board {
         }
     }
 
-    /**
-     * The player can not manually move in snake direction.
-     * @param {*} direction 
-     * @param {*} interval 
-     * @returns 
-     */
-    _isPlayerMoveInSnakeDirection(direction, interval) {
+    _isMoveInSnakeDirection(direction, interval) {
         return (this._calcSnakeDirection() === direction) && !interval;
     }
 
@@ -216,16 +229,9 @@ export class Board {
             direction === DOWN || direction == RIGHT;
     }
 
-    static _isValidPoint(point) {
-        if (!(point instanceof Point)) {
-            throw Error('Arg is not instance of Point.')
-        }
-        if (!(point.x >= 0 && point.x < 9 &&
-            point.y >= 0 && point.y < 9)) {
-            throw Error(`The point ${point} values are not correct.`)
-        }
-
-        return true;
+    _isPointInBounds(point) {
+        return point.x >= 0 && point.x < this._boardSize &&
+            point.y >= 0 && point.y < this._boardSize;
     }
 
     static _genRandomNumber(max) {
