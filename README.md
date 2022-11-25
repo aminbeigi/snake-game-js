@@ -8,7 +8,7 @@
 <br />
 
 <p align="center">
-<a href="../../issues"><img src="https://img.shields.io/github/issues/aminbeigi/aminbeigi.com.svg?style=flat-square"/></a>
+<a href="../../issues"><img src="https://img.shields.io/github/issues/aminbeigi/snake-game-js.svg?style=flat-square"/></a>
 <a href="../../pulls"><img src="https://img.shields.io/github/issues-pr/aminbeigi/snake-game-js.svg?style=flat-square"/></a>
 <img src="https://img.shields.io/github/license/aminbeigi/snake-game-js?style=flat-square" alt="logo">
 </p>
